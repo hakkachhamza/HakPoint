@@ -89,7 +89,7 @@ HakPoint/
 ## Clone Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/HakPoint.git
+git clone https://github.com/hakkachhamza/HakPoint.git
 ```
 
 ## Navigate
@@ -305,7 +305,7 @@ https://linkedin.com/in/hamzahakkache
 Email
 
 ```
-hakkachhamza0@email.com
+hakkachhamza0@gmail.com
 ```
 
 ---
