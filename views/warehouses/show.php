@@ -1,0 +1,18 @@
+<?php require __DIR__.'/_helpers.php'; warehouse_sync_products(); $id=(int)($_GET['id']??0); $w=warehouse_find($id); if(!$w) redirect_to('index.php?page=warehouses');
+$title='Entrepôt - '.($w['name']??''); include __DIR__.'/../layouts/header.php'; [$buy,$sale,$unique,$qtyTotal]=warehouse_values($w); $products=warehouse_product_rows($w); $moves=data_read('warehouse_movements',[]); $last=''; foreach(array_reverse($moves) as $m){ if((int)($m['warehouse_id']??0)===$id){ $last=$m['date']??''; break; }}
+?>
+<div class="warehouse-show-page dol-show-page">
+  <div class="dol-tabs"><a class="active" href="index.php?page=warehouse_show&id=<?=$id?>"><i class="fa-solid fa-box-open text-gold"></i> Entrepôt</a><a href="index.php?page=warehouse_movements&id=<?=$id?>">Mouvements de stock</a><a href="index.php?page=warehouse_movements&id=<?=$id?>">Suivi</a></div>
+  <div class="show-topbar"><a class="back-link" href="index.php?page=warehouses">Retour liste</a><a class="nav-arrow">‹</a><a class="nav-arrow">›</a></div>
+  <div class="warehouse-card-head"><div class="entity-avatar box"><i class="fa-solid fa-box-open"></i></div><div><h3>Nom court de l'emplacement : <?=e($w['name']??'')?></h3><p><i class="fa-solid fa-location-dot muted"></i> <?=e($w['country']??'Maroc (MA)')?></p></div><span class="badge green status-right"><?=e($w['status']??'Ouvert')?></span></div>
+  <div class="two-col-lines">
+    <div class="info-lines"><div><span>Description</span><b><?=e($w['description']??'')?></b></div><div><span>Nombre de produits uniques</span><b><?=e($unique)?></b></div><div><span>Nombre total de produits</span><b><?=e($qtyTotal)?></b></div></div>
+    <div class="info-lines"><div><span>Valorisation achat (PMP)</span><b><?=money($buy)?> MAD</b></div><div><span>Dernier mouvement</span><b><?php if($last): ?><?=e($last)?> <a href="index.php?page=warehouse_movements&id=<?=$id?>">Liste complète</a><?php else: ?>Aucun mouvement<?php endif; ?></b></div></div>
+  </div>
+  <div class="right-actions"><a class="btn orange" href="index.php?page=warehouse_edit&id=<?=$id?>">MODIFIER</a><a class="btn danger-light" href="<?=csrf_url('index.php?page=warehouse_delete&id='.$id)?>" onclick="return confirm('Supprimer cet entrepôt ?')">SUPPRIMER</a></div>
+  <div class="clean-table-box warehouse-stock-box"><table class="clean-table warehouse-stock-table"><thead><tr><th>▴ Produit</th><th>Libellé</th><th>Nombre de pièces</th><th>Unité</th><th>Prix moyen pondéré (PMP) <em>ⓘ</em></th><th>Valorisation achat (PMP)</th><th>Prix de vente unitaire</th><th>Valeur à la vente</th><th></th><th></th></tr></thead><tbody>
+  <?php if(!$products): ?><tr><td colspan="10" class="empty-row">Aucun produit dans cet entrepôt</td></tr><?php endif; ?>
+  <?php foreach($products as $p): ?><tr><td><i class="fa-solid fa-cube product-cube"></i> <a href="<?=product_url($p['id'],'stock')?>"><?=e($p['ref'])?></a></td><td><?=e(mb_strlen($p['label'])>24?mb_substr($p['label'],0,24).'...':$p['label'])?></td><td class="num"><?=e($p['qty'])?></td><td><?=e($p['unit'])?></td><td class="num"><?=money($p['pmp'])?></td><td class="num text-teal"><?=money($p['buy_value'])?></td><td class="num"><?=money($p['sale_price'])?></td><td class="num"><?=money($p['sale_value'])?></td><td><a class="mini-action" href="index.php?page=warehouse_transfer&warehouse_id=<?=$id?>&product_id=<?=(int)$p['id']?>"><i class="fa-solid fa-circle-plus text-gold"></i> Transférer stock</a></td><td><a class="mini-action" href="index.php?page=warehouse_adjust&warehouse_id=<?=$id?>&product_id=<?=(int)$p['id']?>"><i class="fa-solid fa-circle-plus text-gold"></i> Corriger le stock</a></td></tr><?php endforeach; ?>
+  </tbody></table></div>
+</div>
+<?php include __DIR__.'/../layouts/footer.php'; ?>

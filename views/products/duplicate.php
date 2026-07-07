@@ -1,0 +1,2 @@
+<?php
+$id=(int)($_GET['id']??0); $products=data_read('products',[]); $p=find_row_by_id($products,$id); if($p){ $new=$p; $new['id']=next_id($products); $new['ref']=($p['ref']??'PROD').'-COPY'; $new['label']=($p['label']??'Produit').' (copie)'; $new['created_at']=date('d/m/Y H:i'); $products[]=$new; data_write('products',$products); redirect_to('index.php?page=product_show&id='.$new['id']); } redirect_to('index.php?page=products');

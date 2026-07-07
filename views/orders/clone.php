@@ -1,0 +1,20 @@
+<?php
+require_once __DIR__.'/_helpers.php';
+$orders=data_read('orders',[]);
+$id=(int)($_GET['id'] ?? 0);
+$order=find_row_by_id($orders,$id);
+if(!$order) redirect_to('index.php?page=orders');
+$new=$order;
+$new['id']=next_id($orders);
+$new['ref']=order_ref($new['id']);
+$new['status']='Brouillon';
+$new['created_at']=date('d/m/Y H:i');
+$new['updated_at']=date('d/m/Y H:i');
+$new['cloned_from']=$order['ref'] ?? '';
+$new['facture']='Non';
+$new['expediable']='Oui';
+unset($new['invoice_id'],$new['invoice_ids'],$new['invoice_ref'],$new['invoiced_at'],$new['expedition_id'],$new['expedition_ids']);
+$new=array_merge($new, ge_author_fields('author'));
+$orders[]=$new;
+data_write('orders',$orders);
+redirect_to('index.php?page=order_show&id='.$new['id']);

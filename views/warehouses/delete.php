@@ -1,0 +1,1 @@
+<?php require __DIR__.'/_helpers.php'; $id=(int)($_GET['id']??$_POST['id']??0); $rows=array_values(array_filter(warehouses_all(), fn($w)=>(int)($w['id']??0)!==$id)); data_write('warehouses',$rows); redirect_to('index.php?page=warehouses');

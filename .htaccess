@@ -1,0 +1,26 @@
+# GLOBAL ENERGIE PANEL - Security rules for Apache/cPanel
+DirectoryIndex index.php
+Options -Indexes
+ServerSignature Off
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Block hidden files and sensitive config/source folders from direct web access.
+  RewriteRule (^|/)\.(env|git|svn|hg)(/|$) - [F,L,NC]
+  RewriteRule ^(app|views|database|storage|vendor|node_modules)(/|$) - [F,L,NC]
+
+  # Block backups, archives, SQL dumps, logs and server config files.
+  RewriteRule \.(env|sql|bak|old|log|ini|conf|sh|cmd|exe|dll|zip|tar|gz|7z|rar|json|lock|md)$ - [F,L,NC]
+</IfModule>
+
+<FilesMatch "(^\.|composer\.(json|lock)|package(-lock)?\.json|yarn\.lock|pnpm-lock\.yaml|README.*|DEPLOY.*|.*\.(env|sql|bak|old|log|ini|conf|sh|cmd|exe|dll|zip|tar|gz|7z|rar|json|lock|md)$)">
+  Require all denied
+</FilesMatch>
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+</IfModule>

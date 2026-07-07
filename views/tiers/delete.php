@@ -1,0 +1,1 @@
+<?php $id=(int)($_GET['id']??0); $tiers=array_values(array_filter(tiers_all(), fn($t)=>(int)($t['id']??0)!==$id)); data_write('tiers',$tiers); sync_tiers_legacy($tiers); redirect_to('index.php?page=tiers'); ?>

@@ -1,0 +1,18 @@
+# GLOBAL ENERGIE PANEL - Caddy/Railway security rules.
+# Caddy ignores .htaccess, so these rules protect private PHP app files when deployed with Caddy.
+:{$PORT} {
+    root * /app
+    encode gzip
+
+    @private path /.env* /.git* /.svn* /.hg* /composer.* /package*.json /yarn.lock /pnpm-lock.yaml /README* /DEPLOY* /Caddyfile /config.php /install*.sql /database/* /app/* /views/* /storage/* /vendor/* /node_modules/*
+    respond @private 403
+
+    @blocked_ext path *.env *.sql *.bak *.old *.log *.ini *.conf *.sh *.cmd *.exe *.dll *.zip *.tar *.gz *.7z *.rar *.json *.lock *.md
+    respond @blocked_ext 403
+
+    @blocked_uploads path_regexp blocked_uploads ^/(uploads|storage)/.*\.(?i:php|phtml|phar|cgi|pl|asp|aspx|jsp|sh|py)$
+    respond @blocked_uploads 403
+
+    php_fastcgi unix//run/php/php-fpm.sock
+    file_server
+}
